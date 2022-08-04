@@ -9,6 +9,9 @@ import GlobalState from '../components/global/GlobalState';
 import Signup from '../pages/Signup';
 import RegisterAddress from '../pages/RegisterAddress';
 import Feed from '../pages/Feed';
+import Restaurant from '../pages/Restaurant';
+import Cart from '../pages/Cart';
+import Profile from '../pages/Profile'
 
 const Router = () => {
   return (
@@ -19,7 +22,10 @@ const Router = () => {
           <Route path='/' element={<Login />}></Route>
           <Route path='/signup' element={<Signup />}></Route>   
           <Route path='/register-address' element={<RegisterAddress />}></Route>
-          <Route path='/feed' element={<Feed />}></Route>       
+          <Route path='/feed' element={<Feed />}></Route>
+          <Route path='/restaurant' element={<Restaurant />}></Route>
+          <Route path='/cart' element={<Cart />}></Route>
+          <Route path='/profile' element={<Profile />}></Route>
         </Routes>
       </GlobalState>
     </BrowserRouter>

@@ -13,3 +13,15 @@ export const goToAddressPage = (navigate) => {
 export const goToFeedPage = (navigate) => {
     navigate('/feed')
 }
+
+export const goToRestaurantPage = (navigate) => {
+    navigate('/restaurant')
+}
+
+export const goToCartPage = (navigate) => {
+    navigate('/cart')
+}
+
+export const goToProfilePage = (navigate) => {
+    navigate('/profile')
+}
