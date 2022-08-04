@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { GlobalContext } from './GlobalContext'
 import { baseURL } from '../../constants/baseURL'
-import { goToFeedPage } from '../../routes/coordinator'
+import { goToFeedPage, goToRestaurantPage } from '../../routes/coordinator'
 import { Navigate, useNavigate } from 'react-router-dom'
 
 export default function GlobalState(props) {
@@ -12,6 +12,9 @@ export default function GlobalState(props) {
     const [searchInput, setSearchInput] = useState('')
     const [category, setCategory] = useState('')
     const [categoryFiltered, setCategoryFiltered] = useState(false)
+    const [restaurantDetails, setRestaurantDetails] = useState({})
+    const [restaurantProducts, setRestaurantProducts] = useState([])
+    const [profile, setProfile] = useState({})
     const navigate = useNavigate()
     const userLogin = (form) => {
         if (form.email === '' || !form.email.toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
@@ -27,6 +30,7 @@ export default function GlobalState(props) {
                 console.log(res.data)
                 localStorage.setItem('token', res.data.token)
                 setErrors({ email: false, password: false })
+                goToFeedPage(navigate)
             })
             .catch((err) => {
                 console.log(err)
@@ -138,6 +142,42 @@ export default function GlobalState(props) {
         return item.category === category
     })
 
+    const getRestaurantDetails = (id) => {
+        axios.get(baseURL + `/restaurants/${id}`, {
+            headers: {
+                auth: localStorage.getItem('token')
+            }
+        })
+        .then((res) => {
+            console.log(res.data.restaurant)
+            setRestaurantDetails(res.data.restaurant)
+            setRestaurantProducts(res.data.restaurant.products)
+            goToRestaurantPage(navigate)
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }
+
+    const getProfile = () => {
+        axios.get(baseURL + '/profile', {
+            headers: {
+                auth: localStorage.getItem('token')
+            }
+        })
+        .then((res) => {
+            setProfile(res.data.user)
+            console.log(res.data.user)
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }
+
+    useEffect(() => {
+        getProfile()
+    }, [])
+
     const Provider = GlobalContext.Provider
     const values = {
         userLogin,
@@ -151,7 +191,12 @@ export default function GlobalState(props) {
         filterCategory,
         category,
         filteredCategory,
-        categoryFiltered
+        categoryFiltered,
+        getRestaurantDetails,
+        restaurantDetails,
+        restaurantProducts,
+        getProfile,
+        profile
     }
 
     return (<Provider value={values}>{props.children}</Provider>)
