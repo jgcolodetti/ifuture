@@ -15,6 +15,7 @@ export default function GlobalState(props) {
     const [restaurantDetails, setRestaurantDetails] = useState({})
     const [restaurantProducts, setRestaurantProducts] = useState([])
     const [profile, setProfile] = useState({})
+    const [cartProducts, setCartProducts] = useState([])
     const navigate = useNavigate()
     const userLogin = (form) => {
         if (form.email === '' || !form.email.toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
@@ -143,13 +144,17 @@ export default function GlobalState(props) {
     })
 
     const getRestaurantDetails = (id) => {
+        // if (restaurantDetails.id === id) {
+        //     goToRestaurantPage(navigate)
+        //     return
+        // }
         axios.get(baseURL + `/restaurants/${id}`, {
             headers: {
                 auth: localStorage.getItem('token')
             }
         })
         .then((res) => {
-            console.log(res.data.restaurant)
+            console.log(res.data)
             setRestaurantDetails(res.data.restaurant)
             setRestaurantProducts(res.data.restaurant.products)
             goToRestaurantPage(navigate)
@@ -196,7 +201,10 @@ export default function GlobalState(props) {
         restaurantDetails,
         restaurantProducts,
         getProfile,
-        profile
+        profile,
+        cartProducts,
+        setCartProducts,
+        setRestaurantDetails
     }
 
     return (<Provider value={values}>{props.children}</Provider>)

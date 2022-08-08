@@ -9,7 +9,7 @@ import Navbar from '../components/Navbar'
 
 
 export default function Restaurant() {
-    const { setConfirmProduct, confirmProduct, restaurantProducts } = useContext(GlobalContext)
+    const { setConfirmProduct, confirmProduct, restaurantProducts, restaurantDetails } = useContext(GlobalContext)
     const productCategories = restaurantProducts.map((item) => {
         return item.category
     })
@@ -17,7 +17,7 @@ export default function Restaurant() {
     let uniqueCategories = [...new Set(productCategories)]
 
     useEffect(() => {
-        console.log(productCategories, uniqueCategories)
+        localStorage.setItem('restaurantDetails', JSON.stringify(restaurantDetails))
     }, [])
 
     return (
