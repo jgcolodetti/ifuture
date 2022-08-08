@@ -11,12 +11,12 @@ import Navbar from '../components/Navbar'
 export default function Feed() {
     const { getRestaurants, restaurants, setSearchInput, category, filterCategory, searchInput, filteredRestaurants } = useContext(GlobalContext)
     const categories = ['Árabe', 'Asiática', 'Hamburguer', 'Italiana', 'Sorvetes', 'Carnes', 'Baiana', 'Petiscos', 'Mexicana']
+    const navigate = useNavigate()
+
     useEffect(() => {
         getRestaurants()
-        console.log(restaurants)
     }, [])
-
-    const navigate = useNavigate()
+    
     return (
         <Flex flexDir={'column'} fontFamily={'Roboto'}>
             <Header name='iFuture' onFeed={true}></Header>
