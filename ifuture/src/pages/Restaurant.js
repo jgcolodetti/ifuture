@@ -37,6 +37,7 @@ export default function Restaurant() {
                                 name={product.name}
                                 price={product.price}
                                 description={product.description}
+                                id={product.id}
                                 ></ProductCard>
                         </Flex>
                     })}

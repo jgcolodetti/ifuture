@@ -16,7 +16,9 @@ export default function GlobalState(props) {
     const [restaurantProducts, setRestaurantProducts] = useState([])
     const [profile, setProfile] = useState({})
     const [cartProducts, setCartProducts] = useState([])
+    const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate()
+
     const userLogin = (form) => {
         if (form.email === '' || !form.email.toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
             setErrors({ email: true })
@@ -28,7 +30,6 @@ export default function GlobalState(props) {
         }
         axios.post(baseURL + '/login', form)
             .then((res) => {
-                console.log(res.data)
                 localStorage.setItem('token', res.data.token)
                 setErrors({ email: false, password: false })
                 goToFeedPage(navigate)
@@ -61,7 +62,6 @@ export default function GlobalState(props) {
         }
         axios.post(baseURL + '/signup', form)
             .then((res) => {
-                console.log(res.data)
                 localStorage.setItem('token', res.data.token)
                 setErrors({ name: false, email: false, password: false, cpf: false, confirmPassword: false })
             })
@@ -99,7 +99,6 @@ export default function GlobalState(props) {
             }
         })
             .then((res) => {
-                console.log(res.data)
                 localStorage.setItem('token', res.data.token)
                 setErrors({ street: false, number: false, neighbourhood: false, city: false, state: false })
                 setUser(res.data.user)
@@ -111,23 +110,24 @@ export default function GlobalState(props) {
     }
 
     const getRestaurants = () => {
+        setIsLoading(true)
         axios.get(baseURL + '/restaurants', {
             headers: {
                 auth: localStorage.getItem('token')
             }
         })
-        .then((res) => {
-            console.log(res.data)
-            setRestaurants(res.data.restaurants)
-        })
-        .catch((err) => {
-            console.log(err)
-        })
+            .then((res) => {
+                setRestaurants(res.data.restaurants)
+                setIsLoading(false)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
     }
 
     const filterCategory = (categoryInput) => {
         setCategory(categoryInput)
-        if( categoryInput === category) {
+        if (categoryInput === category) {
             setCategoryFiltered(false)
             setCategory('')
             return
@@ -144,24 +144,19 @@ export default function GlobalState(props) {
     })
 
     const getRestaurantDetails = (id) => {
-        // if (restaurantDetails.id === id) {
-        //     goToRestaurantPage(navigate)
-        //     return
-        // }
         axios.get(baseURL + `/restaurants/${id}`, {
             headers: {
                 auth: localStorage.getItem('token')
             }
         })
-        .then((res) => {
-            console.log(res.data)
-            setRestaurantDetails(res.data.restaurant)
-            setRestaurantProducts(res.data.restaurant.products)
-            goToRestaurantPage(navigate)
-        })
-        .catch((err) => {
-            console.log(err)
-        })
+            .then((res) => {
+                setRestaurantDetails(res.data.restaurant)
+                setRestaurantProducts(res.data.restaurant.products)
+                goToRestaurantPage(navigate, id)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
     }
 
     const getProfile = () => {
@@ -170,17 +165,70 @@ export default function GlobalState(props) {
                 auth: localStorage.getItem('token')
             }
         })
-        .then((res) => {
-            setProfile(res.data.user)
-            console.log(res.data.user)
+            .then((res) => {
+                setProfile(res.data.user)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    }
+
+    const placeOrder = (paymentMethod, restaurantId) => {
+        if (cartProducts.length === 0) {
+            return
+        }
+        const products = cartProducts.map((item) => {
+            let obj = {
+                id: item.id,
+                quantity: item.quantity
+            }
+            return obj
         })
-        .catch((err) => {
-            console.log(err)
+        console.log(products)
+        const body = {
+            products: products,
+            paymentMethod: paymentMethod
+        }
+        axios.post(baseURL + `/restaurants/${restaurantId}/order`, body, {
+            headers: {
+                auth: localStorage.getItem('token')
+            }
         })
+        setCartProducts([])
+        localStorage.setItem('cartProducts', JSON.stringify([]))
+        const cartProductsNames = cartProducts.map((item) => {
+            return item.name
+        })
+        for (let i = 0; i < cartProductsNames.length; i++) {
+            localStorage.removeItem(cartProductsNames[i].name)
+        }
+    }
+
+    const [activeOrderInfo, setActiveOrderInfo] = useState({})
+    const [activeOrder, setActiveOrder] = useState(false)
+
+    const getActiveOrder = () => {
+        axios.get(baseURL + '/active-order', {
+            headers: {
+                auth: localStorage.getItem('token')
+            }
+        }).then((res) => {
+            if (res.data.order !== null) {
+                setActiveOrder(true)
+            } else {
+                setActiveOrder(false)
+            }
+            setActiveOrderInfo(res.data.order)
+        }).catch(err => {
+            console.log(err);
+        });
     }
 
     useEffect(() => {
-        getProfile()
+        if (localStorage.getItem('token')) {
+            getProfile()
+            getActiveOrder()
+        }
     }, [])
 
     const Provider = GlobalContext.Provider
@@ -204,7 +252,12 @@ export default function GlobalState(props) {
         profile,
         cartProducts,
         setCartProducts,
-        setRestaurantDetails
+        setRestaurantDetails,
+        placeOrder,
+        getActiveOrder,
+        activeOrder,
+        activeOrderInfo,
+        isLoading,
     }
 
     return (<Provider value={values}>{props.children}</Provider>)

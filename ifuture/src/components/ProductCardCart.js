@@ -27,8 +27,8 @@ export default function ProductCardCart({ photoUrl, name, price, description, qu
         }) 
         localStorage.removeItem(name)
         setCartProducts(newCartProducts)
-        console.log(cartProducts)
     }
+
     return (
         <Flex border={'1px solid #b8b8b8'} w={'100%'} borderRadius={'8px'} marginY={'0.25rem'}>
             <Image src={photoUrl} w={'6rem'} borderTopLeftRadius={'8px'} borderBottomLeftRadius={'8px'}></Image>
