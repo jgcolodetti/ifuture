@@ -8,13 +8,15 @@ import {
     Text,
 } from '@chakra-ui/react'
 import ConfirmProduct from './ConfirmProduct'
+import AlertActiveOrder from './AlertActiveOrder'
 
-export default function ProductCard({ photoUrl, name, price, description }) {
+export default function ProductCard({ photoUrl, name, price, description, id }) {
     const [newPrice, setNewPrice] = useState('')
-    const { setCartProducts, cartProducts } = useContext(GlobalContext)
+    const { setCartProducts, cartProducts, activeOrder} = useContext(GlobalContext)
     const [quantity, setQuantity] = useState(0)
     const [confirmProduct, setConfirmProduct] = useState(false)
-
+    const [alertActiveOrder, setAlertActiveOrder] = useState(false)
+    
     useEffect(() => {
         if (price.toString().includes('.')) {
             setNewPrice(price + '0')
@@ -27,6 +29,11 @@ export default function ProductCard({ photoUrl, name, price, description }) {
     }, [])
 
     const handleClick = (qntInput) => {
+        if (activeOrder) {
+            setAlertActiveOrder(true)
+            setConfirmProduct(false)
+            return
+        }
         localStorage.setItem(name, qntInput)
         setQuantity(Number(qntInput))
         setConfirmProduct(false)
@@ -35,14 +42,14 @@ export default function ProductCard({ photoUrl, name, price, description }) {
             name: name,
             price: price,
             description: description,
-            quantity: Number(qntInput)
+            quantity: Number(qntInput),
+            id: id
         }
         setCartProducts([...cartProducts, newCartProduct])
     }
 
     useEffect(() => {
         localStorage.setItem('cartProducts', JSON.stringify(cartProducts))
-        console.log(cartProducts)
     }, [cartProducts])
 
     const handleRemove = (name) => {
@@ -91,6 +98,7 @@ export default function ProductCard({ photoUrl, name, price, description }) {
                 </Flex>
             </Flex>
             {confirmProduct && <ConfirmProduct handleClick={handleClick}></ConfirmProduct>}
+            {alertActiveOrder && <AlertActiveOrder setAlertActiveOrder={setAlertActiveOrder}/>}
         </Flex>
     )
 }
