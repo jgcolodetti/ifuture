@@ -7,7 +7,7 @@ Projeto final do curso de Front-End da Labenu. A ideia foi desenvolver um aplica
 
 # 🔗 Link para acessar
 
-[keen-interest.surge.sh/](https://keen-interest.surge.sh/)
+[mere-fuel.surge.sh/](https://mere-fuel.surge.sh/)
 
 # 🛠 Tecnologias
 
