@@ -25,12 +25,15 @@ export default function Cart() {
             setRestaurantDetails(JSON.parse(localStorage.getItem('restaurantDetails')))
         }
         !localStorage.getItem('token') && goToLoginPage(navigate)
-        if (activeOrder && activeOrderInfo.totalPrice.toString().includes('.')) {
-            setNewPrice(activeOrderInfo.totalPrice + '0')
-        } else {
-            setNewPrice(activeOrderInfo.totalPrice + '.00')
-        }
     }, [])
+
+    useEffect(() => {
+        if (activeOrder && activeOrderInfo.totalPrice.toString().includes('.')) {
+            setNewPrice(activeOrderInfo.totalPrice.toFixed(1) + '0')
+        } else if (activeOrder) {
+            setNewPrice(activeOrderInfo.totalPrice.toFixed(1) + '.00')
+        }
+    }, [activeOrderInfo])
 
     const cartProductPrices = cartProducts.map((item) => { return (item.price * item.quantity) })
     const totalPrice = cartProductPrices.reduce((partialSum, a) => partialSum + a, 0).toFixed(1)

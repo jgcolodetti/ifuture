@@ -25,3 +25,7 @@ export const goToCartPage = (navigate) => {
 export const goToProfilePage = (navigate) => {
     navigate('/profile')
 }
+
+export const goToEditProfilePage = (navigate) => {
+    navigate('/profile/edit/user')
+}
