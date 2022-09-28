@@ -220,14 +220,48 @@ export default function GlobalState(props) {
             }
             setActiveOrderInfo(res.data.order)
         }).catch(err => {
-            console.log(err);
-        });
+            console.log(err)
+        })
+    }
+
+    const [orders, setOrders] = useState([])
+    const getOrdersHistory = () => {
+        axios.get(baseURL + '/orders/history', {
+            headers: {
+                auth: localStorage.getItem('token')
+            }
+        })
+            .then((res) => {
+                console.log(res.data.orders)
+                setOrders(res.data.orders)
+            })
+    }
+
+    const editProfile = (form) => {
+        const body = {
+            name: form.name,
+            email: form.email,
+            cpf: form.cpf
+        }
+
+        axios.put(baseURL + '/profile', body, {
+            headers: {
+                auth: localStorage.getItem('token')
+            }
+        })
+        .then(() =>{
+            getProfile()
+        })
+        .catch(err => {
+            console.log(err)
+        })
     }
 
     useEffect(() => {
         if (localStorage.getItem('token')) {
             getProfile()
             getActiveOrder()
+            getOrdersHistory()
         }
     }, [])
 
@@ -258,6 +292,9 @@ export default function GlobalState(props) {
         activeOrder,
         activeOrderInfo,
         isLoading,
+        getOrdersHistory,
+        orders,
+        editProfile,
     }
 
     return (<Provider value={values}>{props.children}</Provider>)

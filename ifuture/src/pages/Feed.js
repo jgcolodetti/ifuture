@@ -23,9 +23,9 @@ export default function Feed() {
 
     useEffect(() => {
         if (activeOrder && activeOrderInfo.totalPrice.toString().includes('.')) {
-            setNewPrice(activeOrderInfo.totalPrice + '0')
-        } else {
-            setNewPrice(activeOrderInfo.totalPrice + '.00')
+            setNewPrice(activeOrderInfo.totalPrice.toFixed(1) + '0')
+        } else if ( activeOrder ){
+            setNewPrice(activeOrderInfo.totalPrice.toFixed(1) + '.00')
         }
     }, [activeOrderInfo])
 

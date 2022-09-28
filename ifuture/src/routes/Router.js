@@ -12,6 +12,7 @@ import Feed from '../pages/Feed';
 import Restaurant from '../pages/Restaurant';
 import Cart from '../pages/Cart';
 import Profile from '../pages/Profile'
+import EditProfile from '../pages/EditProfile';
 
 const Router = () => {
   return (
@@ -26,6 +27,7 @@ const Router = () => {
           <Route path='/restaurant/:id' element={<Restaurant />}></Route>
           <Route path='/cart' element={<Cart />}></Route>
           <Route path='/profile' element={<Profile />}></Route>
+          <Route path='/profile/edit/user' element={<EditProfile />}></Route>
         </Routes>
       </GlobalState>
     </BrowserRouter>
